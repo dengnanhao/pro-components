@@ -1,7 +1,7 @@
 {
-  "name": "@ant-design/pro-layout",
-  "version": "7.17.17",
-  "description": "@ant-design/pro-layout",
+  "name": "@ant-design/pro-layout-electron",
+  "version": "7.17.100",
+  "description": "@ant-design/pro-layout-electron",
   "keywords": [
     "antd",
     "admin",

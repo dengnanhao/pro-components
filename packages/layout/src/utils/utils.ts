@@ -64,3 +64,17 @@ export function clearMenuItem(menusData: MenuDataItem[]): MenuDataItem[] {
     })
     .filter((item) => item) as MenuDataItem[];
 }
+
+
+
+/**
+ * 根据hash地址获取路由地址pathname
+ * hash #/audit/operation-log
+ * pathname /audit/operation-log
+ */
+export const getPathNameByHash = (hash: string) => {
+  if (!hash || hash.indexOf('#') === -1) {
+    return ""
+  }
+  return hash.split("#")[1]
+}

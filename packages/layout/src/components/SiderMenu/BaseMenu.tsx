@@ -1,31 +1,31 @@
-import { createFromIconfontCN } from '@ant-design/icons';
-import type { ProTokenType } from '@ant-design/pro-provider';
-import { ProProvider } from '@ant-design/pro-provider';
-import { isImg, isUrl, useMountMergeState } from '@ant-design/pro-utils';
-import type { MenuProps } from 'antd';
-import { Menu, Skeleton, Tooltip } from 'antd';
-import type { ItemType } from 'antd/lib/menu/hooks/useItems';
-import classNames from 'classnames';
-import React, { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import type { PureSettings } from '../../defaultSettings';
-import { defaultSettings } from '../../defaultSettings';
+import { createFromIconfontCN } from "@ant-design/icons";
+import type { ProTokenType } from "@ant-design/pro-provider";
+import { ProProvider } from "@ant-design/pro-provider";
+import { isImg, isUrl, useMountMergeState } from "@ant-design/pro-utils";
+import type { MenuProps } from "antd";
+import { Menu, Skeleton, Tooltip } from "antd";
+import type { ItemType } from "antd/lib/menu/hooks/useItems";
+import classNames from "classnames";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import type { PureSettings } from "../../defaultSettings";
+import { defaultSettings } from "../../defaultSettings";
 import type {
   MenuDataItem,
   MessageDescriptor,
   RouterTypes,
   WithFalse,
-} from '../../typing';
-import { getOpenKeysFromMenuData } from '../../utils/utils';
-import type { PrivateSiderMenuProps } from './SiderMenu';
-import { useStyle } from './style/menu';
+} from "../../typing";
+import { getOpenKeysFromMenuData, getPathNameByHash } from "../../utils/utils";
+import type { PrivateSiderMenuProps } from "./SiderMenu";
+import { useStyle } from "./style/menu";
 
 // todo
 export type MenuMode =
-  | 'vertical'
-  | 'vertical-left'
-  | 'vertical-right'
-  | 'horizontal'
-  | 'inline';
+  | "vertical"
+  | "vertical-left"
+  | "vertical-right"
+  | "horizontal"
+  | "inline";
 
 const MenuItemTooltip = (props: {
   collapsed?: boolean;
@@ -89,7 +89,7 @@ export type BaseMenuProps = {
         isUrl: boolean;
       },
       defaultDom: React.ReactNode,
-      menuProps: BaseMenuProps,
+      menuProps: BaseMenuProps
     ) => React.ReactNode
   >;
 
@@ -107,7 +107,7 @@ export type BaseMenuProps = {
         onClick: () => void;
       },
       defaultDom: React.ReactNode,
-      menuProps: BaseMenuProps & Partial<PrivateSiderMenuProps>,
+      menuProps: BaseMenuProps & Partial<PrivateSiderMenuProps>
     ) => React.ReactNode
   >;
 
@@ -118,7 +118,7 @@ export type BaseMenuProps = {
    */
   postMenuData?: (menusData?: MenuDataItem[]) => MenuDataItem[];
 } & Partial<RouterTypes> &
-  Omit<MenuProps, 'openKeys' | 'onOpenChange' | 'title'> &
+  Omit<MenuProps, "openKeys" | "onOpenChange" | "title"> &
   Partial<PureSettings>;
 
 let IconFont = createFromIconfontCN({
@@ -133,10 +133,10 @@ let IconFont = createFromIconfontCN({
 //   icon: <Icon type="setting" />,
 const getIcon = (
   icon: string | React.ReactNode,
-  iconPrefixes: string = 'icon-',
-  className: string,
+  iconPrefixes: string = "icon-",
+  className: string
 ): React.ReactNode => {
-  if (typeof icon === 'string' && icon !== '') {
+  if (typeof icon === "string" && icon !== "") {
     if (isUrl(icon) || isImg(icon)) {
       return (
         <img
@@ -156,7 +156,7 @@ const getIcon = (
 };
 
 const getMenuTitleSymbol = (title: React.ReactNode) => {
-  if (title && typeof title === 'string') {
+  if (title && typeof title === "string") {
     const symbol = title.substring(0, 1).toUpperCase();
     return symbol;
   }
@@ -167,17 +167,17 @@ class MenuUtil {
   constructor(
     props: BaseMenuProps & {
       token?: ProTokenType;
-      menuRenderType?: 'header' | 'sider';
+      menuRenderType?: "header" | "sider";
       baseClassName: string;
       hashId: string;
-    },
+    }
   ) {
     this.props = props;
   }
 
   props: BaseMenuProps & {
     token?: ProTokenType;
-    menuRenderType?: 'header' | 'sider';
+    menuRenderType?: "header" | "sider";
     baseClassName: string;
     hashId: string;
   };
@@ -185,7 +185,7 @@ class MenuUtil {
   getNavMenuItems = (
     menusData: MenuDataItem[] = [],
     level: number,
-    noGroupLevel: number,
+    noGroupLevel: number
   ): ItemType[] =>
     menusData
       .map((item) => this.getSubMenuOrItem(item, level, noGroupLevel))
@@ -196,7 +196,7 @@ class MenuUtil {
   getSubMenuOrItem = (
     item: MenuDataItem,
     level: number,
-    noGroupLevel: number,
+    noGroupLevel: number
   ): ItemType | ItemType[] => {
     const {
       subMenuItemRender,
@@ -207,13 +207,13 @@ class MenuUtil {
       iconPrefixes,
       layout,
     } = this.props;
-    const isGroup = menu?.type === 'group' && layout !== 'top';
+    const isGroup = menu?.type === "group" && layout !== "top";
     const designToken = this.props.token;
 
     const name = this.getIntlName(item);
     const children = item?.children || item?.routes;
 
-    const menuType = isGroup && level === 0 ? ('group' as const) : undefined;
+    const menuType = isGroup && level === 0 ? ("group" as const) : undefined;
 
     if (Array.isArray(children) && children.length > 0) {
       /** Menu 第一级可以有icon，或者 isGroup 时第二级别也要有 */
@@ -223,7 +223,7 @@ class MenuUtil {
       const iconDom = getIcon(
         item.icon,
         iconPrefixes,
-        `${baseClassName}-icon ${this.props?.hashId}`,
+        `${baseClassName}-icon ${this.props?.hashId}`
       );
       /**
        * 如果没有icon在收起的时候用首字母代替
@@ -240,14 +240,14 @@ class MenuUtil {
               [`${baseClassName}-item-title-collapsed`]: collapsed,
               [`${baseClassName}-item-title-collapsed-level-${noGroupLevel}`]:
                 collapsed,
-              [`${baseClassName}-group-item-title`]: menuType === 'group',
+              [`${baseClassName}-group-item-title`]: menuType === "group",
               [`${baseClassName}-item-collapsed-show-title`]:
                 menu?.collapsedShowTitle && collapsed,
-            },
+            }
           )}
         >
           {/* 收起的时候group模式就不要展示icon了，放不下 */}
-          {menuType === 'group' && collapsed ? null : shouldHasIcon &&
+          {menuType === "group" && collapsed ? null : shouldHasIcon &&
             iconDom ? (
             <span
               className={`${baseClassName}-item-icon ${this.props?.hashId}`.trim()}
@@ -263,10 +263,10 @@ class MenuUtil {
               this.props?.hashId,
               {
                 [`${baseClassName}-item-text-has-icon`]:
-                  menuType !== 'group' &&
+                  menuType !== "group" &&
                   shouldHasIcon &&
                   (iconDom || defaultIcon),
-              },
+              }
             )}
           >
             {name}
@@ -292,7 +292,7 @@ class MenuUtil {
       const childrenList = this.getNavMenuItems(
         children,
         level + 1,
-        isGroup && level === 0 && this.props.collapsed ? level : level + 1,
+        isGroup && level === 0 && this.props.collapsed ? level : level + 1
       );
 
       return [
@@ -303,22 +303,22 @@ class MenuUtil {
           onClick: isGroup ? undefined : item.onTitleClick,
           children: childrenList,
           className: classNames({
-            [`${baseClassName}-group`]: menuType === 'group',
-            [`${baseClassName}-submenu`]: menuType !== 'group',
+            [`${baseClassName}-group`]: menuType === "group",
+            [`${baseClassName}-submenu`]: menuType !== "group",
             [`${baseClassName}-submenu-has-icon`]:
-              menuType !== 'group' && shouldHasIcon && iconDom,
+              menuType !== "group" && shouldHasIcon && iconDom,
           }),
         } as ItemType,
         isGroup && level === 0
           ? ({
-              type: 'divider',
+              type: "divider",
               prefixCls,
               className: `${baseClassName}-divider`,
-              key: (item.key! || item.path!) + '-group-divider',
+              key: (item.key! || item.path!) + "-group-divider",
               style: {
                 padding: 0,
                 borderBlockEnd: 0,
-                margin: this.props.collapsed ? '4px' : '6px 16px',
+                margin: this.props.collapsed ? "4px" : "6px 16px",
                 marginBlockStart: this.props.collapsed ? 4 : 8,
                 borderColor: designToken?.layout?.sider?.colorMenuItemDivider,
               },
@@ -356,11 +356,11 @@ class MenuUtil {
   getMenuItemPath = (
     item: MenuDataItem,
     level: number,
-    noGroupLevel: number,
+    noGroupLevel: number
   ) => {
-    const itemPath = this.conversionPath(item.path || '/');
+    const itemPath = this.conversionPath(item.path || "/");
     const {
-      location = { pathname: '/' },
+      location = { pathname: "/" },
       isMobile,
       onCollapse,
       menuItemRender,
@@ -370,7 +370,7 @@ class MenuUtil {
     // if local is true formatMessage all name。
     const menuItemTitle = this.getIntlName(item);
     const { baseClassName, menu, collapsed } = this.props;
-    const isGroup = menu?.type === 'group';
+    const isGroup = menu?.type === "group";
     /** Menu 第一级可以有icon，或者 isGroup 时第二级别也要有 */
     const hasIcon = level === 0 || (isGroup && level === 1);
     const icon = !hasIcon
@@ -378,7 +378,7 @@ class MenuUtil {
       : getIcon(
           item.icon,
           iconPrefixes,
-          `${baseClassName}-icon ${this.props?.hashId}`,
+          `${baseClassName}-icon ${this.props?.hashId}`
         );
 
     // 如果没有 icon 在收起的时候用首字母代替
@@ -397,13 +397,13 @@ class MenuUtil {
               collapsed,
             [`${baseClassName}-item-collapsed-show-title`]:
               menu?.collapsedShowTitle && collapsed,
-          },
+          }
         )}
       >
         <span
           className={`${baseClassName}-item-icon ${this.props?.hashId}`.trim()}
           style={{
-            display: defaultIcon === null && !icon ? 'none' : '',
+            display: defaultIcon === null && !icon ? "none" : "",
           }}
         >
           {icon || <span className="anticon">{defaultIcon}</span>}
@@ -415,7 +415,7 @@ class MenuUtil {
             {
               [`${baseClassName}-item-text-has-icon`]:
                 hasIcon && (icon || defaultIcon),
-            },
+            }
           )}
         >
           {menuItemTitle}
@@ -430,7 +430,7 @@ class MenuUtil {
         <span
           key={itemPath}
           onClick={() => {
-            window?.open?.(itemPath, '_blank');
+            window?.open?.(itemPath, "_blank");
           }}
           className={classNames(
             `${baseClassName}-item-title`,
@@ -442,13 +442,13 @@ class MenuUtil {
               [`${baseClassName}-item-link`]: true,
               [`${baseClassName}-item-collapsed-show-title`]:
                 menu?.collapsedShowTitle && collapsed,
-            },
+            }
           )}
         >
           <span
             className={`${baseClassName}-item-icon ${this.props?.hashId}`.trim()}
             style={{
-              display: defaultIcon === null && !icon ? 'none' : '',
+              display: defaultIcon === null && !icon ? "none" : "",
             }}
           >
             {icon || <span className="anticon">{defaultIcon}</span>}
@@ -460,7 +460,7 @@ class MenuUtil {
               {
                 [`${baseClassName}-item-text-has-icon`]:
                   hasIcon && (icon || defaultIcon),
-              },
+              }
             )}
           >
             {menuItemTitle}
@@ -474,7 +474,7 @@ class MenuUtil {
         isUrl: isHttpUrl,
         itemPath,
         isMobile,
-        replace: itemPath === location.pathname,
+        replace: itemPath === getPathNameByHash(location.hash),
         onClick: () => onCollapse && onCollapse(true),
         children: undefined,
       };
@@ -504,10 +504,10 @@ class MenuUtil {
   };
 
   conversionPath = (path: string) => {
-    if (path && path.indexOf('http') === 0) {
+    if (path && path.indexOf("http") === 0) {
       return path;
     }
-    return `/${path || ''}`.replace(/\/+/g, '/');
+    return `/${path || ""}`.replace(/\/+/g, "/");
   };
 }
 
@@ -518,13 +518,13 @@ class MenuUtil {
  */
 const getOpenKeysProps = (
   openKeys: (string | number)[] | false,
-  { layout, collapsed }: BaseMenuProps,
+  { layout, collapsed }: BaseMenuProps
 ): {
   openKeys?: undefined | string[];
 } => {
   let openKeysProps = {} as Record<string, any>;
 
-  if (openKeys && !collapsed && ['side', 'mix'].includes(layout || 'mix')) {
+  if (openKeys && !collapsed && ["side", "mix"].includes(layout || "mix")) {
     openKeysProps = {
       openKeys,
     };
@@ -556,7 +556,7 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
   const defaultOpenKeysRef = useRef<string[]>([]);
 
   const [defaultOpenAll, setDefaultOpenAll] = useMountMergeState(
-    menu?.defaultOpenAll,
+    menu?.defaultOpenAll
   );
 
   const [openKeys, setOpenKeys] = useMountMergeState<
@@ -574,7 +574,7 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
     {
       value: propsOpenKeys === false ? undefined : propsOpenKeys,
       onChange: handleOpenChange as any,
-    },
+    }
   );
 
   const [selectedKeys, setSelectedKeys] = useMountMergeState<
@@ -598,7 +598,7 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
       setSelectedKeys(matchMenuKeys);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [matchMenuKeys.join('-')]);
+  }, [matchMenuKeys.join("-")]);
 
   useEffect(() => {
     // reset IconFont
@@ -612,19 +612,19 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
   useEffect(
     () => {
       // if pathname can't match, use the nearest parent's key
-      if (matchMenuKeys.join('-') !== (selectedKeys || []).join('-')) {
+      if (matchMenuKeys.join("-") !== (selectedKeys || []).join("-")) {
         setSelectedKeys(matchMenuKeys);
       }
       if (
         !defaultOpenAll &&
         propsOpenKeys !== false &&
-        matchMenuKeys.join('-') !== (openKeys || []).join('-')
+        matchMenuKeys.join("-") !== (openKeys || []).join("-")
       ) {
         let newKeys: (string | number)[] | false = matchMenuKeys;
         // 如果不自动关闭，我需要把 openKeys 放进去
         if (menu?.autoClose === false) {
           newKeys = Array.from(
-            new Set([...matchMenuKeys, ...(openKeys || [])]),
+            new Set([...matchMenuKeys, ...(openKeys || [])])
           );
         }
         setOpenKeys(newKeys);
@@ -636,13 +636,13 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [matchMenuKeys.join('-')],
+    [matchMenuKeys.join("-")]
   );
 
   const openKeysProps = useMemo(
     () => getOpenKeysProps(openKeys, props),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [openKeys && openKeys.join(','), props.layout, props.collapsed],
+    [openKeys && openKeys.join(","), props.layout, props.collapsed]
   );
   const { wrapSSR, hashId } = useStyle(baseClassName, mode);
 
@@ -660,7 +660,7 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
     return (
       <div
         style={
-          mode?.includes('inline')
+          mode?.includes("inline")
             ? { padding: 24 }
             : {
                 marginBlockStart: 16,
@@ -671,7 +671,7 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
           active
           title={false}
           paragraph={{
-            rows: mode?.includes('inline') ? 6 : 1,
+            rows: mode?.includes("inline") ? 6 : 1,
           }}
         />
       </div>
@@ -700,15 +700,15 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
       mode={mode}
       inlineIndent={16}
       defaultOpenKeys={defaultOpenKeysRef.current}
-      theme={dark ? 'dark' : 'light'}
+      theme={dark ? "dark" : "light"}
       selectedKeys={selectedKeys}
       style={{
-        backgroundColor: 'transparent',
-        border: 'none',
+        backgroundColor: "transparent",
+        border: "none",
         ...style,
       }}
       className={classNames(className, hashId, baseClassName, {
-        [`${baseClassName}-horizontal`]: mode === 'horizontal',
+        [`${baseClassName}-horizontal`]: mode === "horizontal",
         [`${baseClassName}-collapsed`]: props.collapsed,
       })}
       items={menuUtils.getNavMenuItems(finallyData, 0, 0)}
@@ -718,7 +718,7 @@ const BaseMenu: React.FC<BaseMenuProps & PrivateSiderMenuProps> = (props) => {
         }
       }}
       {...props.menuProps}
-    />,
+    />
   );
 };
 

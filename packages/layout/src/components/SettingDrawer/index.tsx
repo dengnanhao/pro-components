@@ -3,14 +3,14 @@ import {
   CopyOutlined,
   NotificationOutlined,
   SettingOutlined,
-} from '@ant-design/icons';
+} from "@ant-design/icons";
 import {
   compareVersions,
   isBrowser,
   merge,
   openVisibleCompatible,
-} from '@ant-design/pro-utils';
-import { useUrlSearchParams } from '@umijs/use-params';
+} from "@ant-design/pro-utils";
+import { useUrlSearchParams } from "@umijs/use-params";
 import {
   Alert,
   ConfigProvider as AntConfigProvider,
@@ -21,21 +21,22 @@ import {
   Switch,
   message,
   version,
-} from 'antd';
-import omit from 'omit.js';
-import useMergedState from 'rc-util/lib/hooks/useMergedState';
-import React, { useEffect, useRef, useState } from 'react';
-import type { ProSettings } from '../../defaultSettings';
-import { defaultSettings } from '../../defaultSettings';
-import { gLocaleObject, getLanguage } from '../../locales';
-import { genStringToTheme } from '../../utils/utils';
-import { BlockCheckbox } from './BlockCheckbox';
-import { LayoutSetting, renderLayoutSettingItem } from './LayoutChange';
-import { RegionalSetting } from './RegionalChange';
-import { ThemeColor } from './ThemeColor';
-import { GroupIcon } from './icon/group';
-import { SubIcon } from './icon/sub';
-import { useStyle } from './style/index';
+} from "antd";
+import omit from "omit.js";
+import useMergedState from "rc-util/lib/hooks/useMergedState";
+import React, { useEffect, useRef, useState } from "react";
+import type { ProSettings } from "../../defaultSettings";
+import { defaultSettings } from "../../defaultSettings";
+import { gLocaleObject, getLanguage } from "../../locales";
+import { genStringToTheme } from "../../utils/utils";
+import { BlockCheckbox } from "./BlockCheckbox";
+import { LayoutSetting, renderLayoutSettingItem } from "./LayoutChange";
+import { RegionalSetting } from "./RegionalChange";
+import { ThemeColor } from "./ThemeColor";
+import { GroupIcon } from "./icon/group";
+import { SubIcon } from "./icon/sub";
+import { useStyle } from "./style/index";
+import { getPathNameByHash } from "../../utils/utils";
 
 type BodyProps = {
   title: string;
@@ -89,21 +90,21 @@ export type SettingDrawerState = {
 type StateKey = keyof ProSettings;
 
 const getDifferentSetting = (
-  state: Partial<ProSettings>,
+  state: Partial<ProSettings>
 ): Record<string, any> => {
   const stateObj = {} as typeof state;
   (Object.keys(state) as StateKey[]).forEach((key) => {
     if (
       state[key] !== defaultSettings[key] &&
       //@ts-ignore
-      key !== 'collapse'
+      key !== "collapse"
     ) {
-      stateObj[key as 'navTheme'] = state[key as 'navTheme'];
+      stateObj[key as "navTheme"] = state[key as "navTheme"];
     } else {
       stateObj[key] = undefined;
     }
-    if (key.includes('Render'))
-      stateObj[key as 'headerRender'] =
+    if (key.includes("Render"))
+      stateObj[key as "headerRender"] =
         state[key] === false ? false : undefined;
   });
   stateObj.menu = undefined;
@@ -134,17 +135,17 @@ export const getFormatMessage = (): ((data: {
 const initState = (
   urlParams: Record<string, any>,
   settings: Partial<ProSettings>,
-  onSettingChange: SettingDrawerProps['onSettingChange'],
+  onSettingChange: SettingDrawerProps["onSettingChange"]
 ) => {
   if (!isBrowser()) return;
 
   const replaceSetting = {} as Record<string, any>;
   Object.keys(urlParams).forEach((key) => {
     if (
-      defaultSettings[key as 'navTheme'] ||
-      defaultSettings[key as 'navTheme'] === undefined
+      defaultSettings[key as "navTheme"] ||
+      defaultSettings[key as "navTheme"] === undefined
     ) {
-      if (key === 'colorPrimary') {
+      if (key === "colorPrimary") {
         replaceSetting[key] = genStringToTheme(urlParams[key]);
         return;
       }
@@ -154,7 +155,7 @@ const initState = (
   const newSettings: MergerSettingsType<ProSettings> = merge(
     {},
     settings,
-    replaceSetting,
+    replaceSetting
   );
   delete newSettings.menu;
   delete newSettings.title;
@@ -166,7 +167,7 @@ const initState = (
 
 const getParamsFromUrl = (
   urlParams: Record<string, any>,
-  settings?: MergerSettingsType<ProSettings>,
+  settings?: MergerSettingsType<ProSettings>
 ) => {
   if (!isBrowser()) return defaultSettings;
 
@@ -184,10 +185,10 @@ const genCopySettingJson = (settingState: MergerSettingsType<ProSettings>) =>
         ...settingState,
         colorPrimary: settingState.colorPrimary,
       },
-      ['colorWeak'],
+      ["colorWeak"]
     ),
     null,
-    2,
+    2
   );
 
 /**
@@ -202,21 +203,21 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
     hideHintAlert,
     hideCopyButton,
     colorList = [
-      { key: 'techBlue', color: '#1677FF' },
-      { key: 'daybreak', color: '#1890ff' },
-      { key: 'dust', color: '#F5222D' },
-      { key: 'volcano', color: '#FA541C' },
-      { key: 'sunset', color: '#FAAD14' },
-      { key: 'cyan', color: '#13C2C2' },
-      { key: 'green', color: '#52C41A' },
-      { key: 'geekblue', color: '#2F54EB' },
-      { key: 'purple', color: '#722ED1' },
+      { key: "techBlue", color: "#1677FF" },
+      { key: "daybreak", color: "#1890ff" },
+      { key: "dust", color: "#F5222D" },
+      { key: "volcano", color: "#FA541C" },
+      { key: "sunset", color: "#FAAD14" },
+      { key: "cyan", color: "#13C2C2" },
+      { key: "green", color: "#52C41A" },
+      { key: "geekblue", color: "#2F54EB" },
+      { key: "purple", color: "#722ED1" },
     ],
     getContainer,
     onSettingChange,
     enableDarkTheme,
-    prefixCls = 'ant-pro',
-    pathname = window.location.pathname,
+    prefixCls = "ant-pro",
+    pathname = getPathNameByHash(window.location.hash),
     disableUrlParams = true,
     themeOnly,
   } = props;
@@ -232,7 +233,7 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
     {},
     {
       disabled: disableUrlParams,
-    },
+    }
   );
 
   const [settingState, setSettingState] = useMergedState<Partial<ProSettings>>(
@@ -240,7 +241,7 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
     {
       value: propsSettings,
       onChange: onSettingChange,
-    },
+    }
   );
 
   const { navTheme, colorPrimary, siderMenuType, layout, colorWeak } =
@@ -259,19 +260,19 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
     initState(
       getParamsFromUrl(urlParams, propsSettings),
       settingState,
-      setSettingState,
+      setSettingState
     );
-    window.document.addEventListener('languagechange', onLanguageChange, {
+    window.document.addEventListener("languagechange", onLanguageChange, {
       passive: true,
     });
 
     return () =>
-      window.document.removeEventListener('languagechange', onLanguageChange);
+      window.document.removeEventListener("languagechange", onLanguageChange);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    if (compareVersions(version, '5.0.0') < 0) {
+    if (compareVersions(version, "5.0.0") < 0) {
       AntConfigProvider.config({
         theme: {
           primaryColor: settingState.colorPrimary,
@@ -289,26 +290,26 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
     const nextState = {} as Record<string, any> as any;
     nextState[key] = value;
 
-    if (key === 'layout') {
-      nextState.contentWidth = value === 'top' ? 'Fixed' : 'Fluid';
+    if (key === "layout") {
+      nextState.contentWidth = value === "top" ? "Fixed" : "Fluid";
     }
-    if (key === 'layout' && value !== 'mix') {
+    if (key === "layout" && value !== "mix") {
       nextState.splitMenus = false;
     }
-    if (key === 'layout' && value === 'mix') {
-      nextState.navTheme = 'light';
+    if (key === "layout" && value === "mix") {
+      nextState.navTheme = "light";
     }
-    if (key === 'colorWeak' && value === true) {
-      const dom = document.querySelector('body');
+    if (key === "colorWeak" && value === true) {
+      const dom = document.querySelector("body");
       if (dom) {
         dom.dataset.prosettingdrawer = dom.style.filter;
-        dom.style.filter = 'invert(80%)';
+        dom.style.filter = "invert(80%)";
       }
     }
-    if (key === 'colorWeak' && value === false) {
-      const dom = document.querySelector('body');
+    if (key === "colorWeak" && value === false) {
+      const dom = document.querySelector("body");
       if (dom) {
-        dom.style.filter = dom.dataset.prosettingdrawer || 'none';
+        dom.style.filter = dom.dataset.prosettingdrawer || "none";
         delete dom.dataset.prosettingdrawer;
       }
     }
@@ -363,14 +364,14 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
         {open ? (
           <CloseOutlined
             style={{
-              color: '#fff',
+              color: "#fff",
               fontSize: 20,
             }}
           />
         ) : (
           <SettingOutlined
             style={{
-              color: '#fff',
+              color: "#fff",
               fontSize: 20,
             }}
           />
@@ -390,8 +391,8 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
         <div className={`${baseClassName}-drawer-content ${hashId}`.trim()}>
           <Body
             title={formatMessage({
-              id: 'app.setting.pagestyle',
-              defaultMessage: 'Page style setting',
+              id: "app.setting.pagestyle",
+              defaultMessage: "Page style setting",
             })}
             hashId={hashId}
             prefixCls={baseClassName}
@@ -401,37 +402,37 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
               prefixCls={baseClassName}
               list={[
                 {
-                  key: 'light',
+                  key: "light",
                   title: formatMessage({
-                    id: 'app.setting.pagestyle.light',
-                    defaultMessage: '亮色菜单风格',
+                    id: "app.setting.pagestyle.light",
+                    defaultMessage: "亮色菜单风格",
                   }),
                 },
                 {
-                  key: 'realDark',
+                  key: "realDark",
                   title: formatMessage({
-                    id: 'app.setting.pagestyle.realdark',
-                    defaultMessage: '暗色菜单风格',
+                    id: "app.setting.pagestyle.realdark",
+                    defaultMessage: "暗色菜单风格",
                   }),
                 },
               ].filter((item) => {
-                if (item.key === 'dark' && settingState.layout === 'mix')
+                if (item.key === "dark" && settingState.layout === "mix")
                   return false;
-                if (item.key === 'realDark' && !enableDarkTheme) return false;
+                if (item.key === "realDark" && !enableDarkTheme) return false;
                 return true;
               })}
               value={navTheme!}
               configType="theme"
               key="navTheme"
-              onChange={(value) => changeSetting('navTheme', value)}
+              onChange={(value) => changeSetting("navTheme", value)}
             />
           </Body>
           {colorList !== false && (
             <Body
               hashId={hashId}
               title={formatMessage({
-                id: 'app.setting.themecolor',
-                defaultMessage: 'Theme color',
+                id: "app.setting.themecolor",
+                defaultMessage: "Theme color",
               })}
               prefixCls={baseClassName}
             >
@@ -441,7 +442,7 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
                 colorList={colorList}
                 value={genStringToTheme(colorPrimary)!}
                 formatMessage={formatMessage}
-                onChange={(color) => changeSetting('colorPrimary', color)}
+                onChange={(color) => changeSetting("colorPrimary", color)}
               />
             </Body>
           )}
@@ -451,7 +452,7 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
               <Body
                 hashId={hashId}
                 prefixCls={baseClassName}
-                title={formatMessage({ id: 'app.setting.navigationmode' })}
+                title={formatMessage({ id: "app.setting.navigationmode" })}
               >
                 <BlockCheckbox
                   prefixCls={baseClassName}
@@ -461,26 +462,26 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
                   configType="layout"
                   list={[
                     {
-                      key: 'side',
-                      title: formatMessage({ id: 'app.setting.sidemenu' }),
+                      key: "side",
+                      title: formatMessage({ id: "app.setting.sidemenu" }),
                     },
                     {
-                      key: 'top',
-                      title: formatMessage({ id: 'app.setting.topmenu' }),
+                      key: "top",
+                      title: formatMessage({ id: "app.setting.topmenu" }),
                     },
                     {
-                      key: 'mix',
-                      title: formatMessage({ id: 'app.setting.mixmenu' }),
+                      key: "mix",
+                      title: formatMessage({ id: "app.setting.mixmenu" }),
                     },
                   ]}
-                  onChange={(value) => changeSetting('layout', value)}
+                  onChange={(value) => changeSetting("layout", value)}
                 />
               </Body>
-              {settingState.layout == 'side' || settingState.layout == 'mix' ? (
+              {settingState.layout == "side" || settingState.layout == "mix" ? (
                 <Body
                   hashId={hashId}
                   prefixCls={baseClassName}
-                  title={formatMessage({ id: 'app.setting.sidermenutype' })}
+                  title={formatMessage({ id: "app.setting.sidermenutype" })}
                 >
                   <BlockCheckbox
                     prefixCls={baseClassName}
@@ -490,21 +491,21 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
                     configType="siderMenuType"
                     list={[
                       {
-                        key: 'sub',
+                        key: "sub",
                         icon: <SubIcon />,
                         title: formatMessage({
-                          id: 'app.setting.sidermenutype-sub',
+                          id: "app.setting.sidermenutype-sub",
                         }),
                       },
                       {
-                        key: 'group',
+                        key: "group",
                         icon: <GroupIcon />,
                         title: formatMessage({
-                          id: 'app.setting.sidermenutype-group',
+                          id: "app.setting.sidermenutype-group",
                         }),
                       },
                     ]}
-                    onChange={(value) => changeSetting('siderMenuType', value)}
+                    onChange={(value) => changeSetting("siderMenuType", value)}
                   />
                 </Body>
               ) : null}
@@ -519,7 +520,7 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
               <Body
                 hashId={hashId}
                 prefixCls={baseClassName}
-                title={formatMessage({ id: 'app.setting.regionalsettings' })}
+                title={formatMessage({ id: "app.setting.regionalsettings" })}
               >
                 <RegionalSetting
                   hashId={hashId}
@@ -534,7 +535,7 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
               <Body
                 hashId={hashId}
                 prefixCls={baseClassName}
-                title={formatMessage({ id: 'app.setting.othersettings' })}
+                title={formatMessage({ id: "app.setting.othersettings" })}
               >
                 <List
                   className={`${baseClassName}-list ${hashId}`.trim()}
@@ -543,14 +544,14 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
                   renderItem={renderLayoutSettingItem}
                   dataSource={[
                     {
-                      title: formatMessage({ id: 'app.setting.weakmode' }),
+                      title: formatMessage({ id: "app.setting.weakmode" }),
                       action: (
                         <Switch
                           size="small"
                           className="color-weak"
                           checked={!!colorWeak}
                           onChange={(checked) => {
-                            changeSetting('colorWeak', checked);
+                            changeSetting("colorWeak", checked);
                           }}
                         />
                       ),
@@ -564,7 +565,7 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
                 <Alert
                   type="warning"
                   message={formatMessage({
-                    id: 'app.setting.production.hint',
+                    id: "app.setting.production.hint",
                   })}
                   icon={<NotificationOutlined />}
                   showIcon
@@ -580,23 +581,23 @@ export const SettingDrawer: React.FC<SettingDrawerProps> = (props) => {
                   onClick={async () => {
                     try {
                       await navigator.clipboard.writeText(
-                        genCopySettingJson(settingState),
+                        genCopySettingJson(settingState)
                       );
                       message.success(
-                        formatMessage({ id: 'app.setting.copyinfo' }),
+                        formatMessage({ id: "app.setting.copyinfo" })
                       );
                     } catch (error) {
                       // console.log(error);
                     }
                   }}
                 >
-                  {formatMessage({ id: 'app.setting.copy' })}
+                  {formatMessage({ id: "app.setting.copy" })}
                 </Button>
               )}
             </>
           )}
         </div>
       </Drawer>
-    </>,
+    </>
   );
 };

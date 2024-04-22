@@ -1,63 +1,63 @@
-import type { GenerateStyle, ProTokenType } from '@ant-design/pro-provider';
+import type { GenerateStyle, ProTokenType } from "@ant-design/pro-provider";
 import {
   ProConfigProvider,
   ProProvider,
   isNeedOpenHash,
-} from '@ant-design/pro-provider';
+} from "@ant-design/pro-provider";
 import {
   coverToNewToken,
   isBrowser,
   useBreakpoint,
   useDocumentTitle,
   useMountMergeState,
-} from '@ant-design/pro-utils';
-import { getMatchMenu } from '@umijs/route-utils';
-import type { BreadcrumbProps } from 'antd';
-import { ConfigProvider, Layout } from 'antd';
-import type { AnyObject } from 'antd/es/_util/type';
-import type { ItemType } from 'antd/es/breadcrumb/Breadcrumb';
-import classNames from 'classnames';
-import Omit from 'omit.js';
-import useMergedState from 'rc-util/lib/hooks/useMergedState';
-import warning from 'rc-util/lib/warning';
-import type { CSSProperties } from 'react';
+} from "@ant-design/pro-utils";
+import { getMatchMenu } from "@umijs/route-utils";
+import type { BreadcrumbProps } from "antd";
+import { ConfigProvider, Layout } from "antd";
+import type { AnyObject } from "antd/es/_util/type";
+import type { ItemType } from "antd/es/breadcrumb/Breadcrumb";
+import classNames from "classnames";
+import Omit from "omit.js";
+import useMergedState from "rc-util/lib/hooks/useMergedState";
+import warning from "rc-util/lib/warning";
+import type { CSSProperties } from "react";
 import React, {
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-} from 'react';
-import useSWR, { useSWRConfig } from 'swr';
-import { WrapContent } from './WrapContent';
-import { Logo } from './assert/Logo';
-import { DefaultFooter as Footer } from './components/Footer';
-import type { HeaderViewProps } from './components/Header';
-import { DefaultHeader as Header } from './components/Header';
-import { PageLoading } from './components/PageLoading';
-import { SiderMenu } from './components/SiderMenu';
-import type { SiderMenuProps } from './components/SiderMenu/SiderMenu';
-import type { SiderMenuToken } from './components/SiderMenu/style';
-import type { WaterMarkProps } from './components/WaterMark';
-import { RouteContext } from './context/RouteContext';
-import type { ProSettings } from './defaultSettings';
-import { defaultSettings } from './defaultSettings';
-import type { GetPageTitleProps } from './getPageTitle';
-import { getPageTitleInfo } from './getPageTitle';
-import type { LocaleType } from './locales';
-import { gLocaleObject } from './locales';
-import { useStyle } from './style';
+} from "react";
+import useSWR, { useSWRConfig } from "swr";
+import { WrapContent } from "./WrapContent";
+import { Logo } from "./assert/Logo";
+import { DefaultFooter as Footer } from "./components/Footer";
+import type { HeaderViewProps } from "./components/Header";
+import { DefaultHeader as Header } from "./components/Header";
+import { PageLoading } from "./components/PageLoading";
+import { SiderMenu } from "./components/SiderMenu";
+import type { SiderMenuProps } from "./components/SiderMenu/SiderMenu";
+import type { SiderMenuToken } from "./components/SiderMenu/style";
+import type { WaterMarkProps } from "./components/WaterMark";
+import { RouteContext } from "./context/RouteContext";
+import type { ProSettings } from "./defaultSettings";
+import { defaultSettings } from "./defaultSettings";
+import type { GetPageTitleProps } from "./getPageTitle";
+import { getPageTitleInfo } from "./getPageTitle";
+import type { LocaleType } from "./locales";
+import { gLocaleObject } from "./locales";
+import { useStyle } from "./style";
 import type {
   MenuDataItem,
   MessageDescriptor,
   RouterTypes,
   WithFalse,
-} from './typing';
-import type { BreadcrumbProLayoutProps } from './utils/getBreadcrumbProps';
-import { getBreadcrumbProps } from './utils/getBreadcrumbProps';
-import { getMenuData } from './utils/getMenuData';
-import { useCurrentMenuLayoutProps } from './utils/useCurrentMenuLayoutProps';
-import { clearMenuItem } from './utils/utils';
+} from "./typing";
+import type { BreadcrumbProLayoutProps } from "./utils/getBreadcrumbProps";
+import { getBreadcrumbProps } from "./utils/getBreadcrumbProps";
+import { getMenuData } from "./utils/getMenuData";
+import { useCurrentMenuLayoutProps } from "./utils/useCurrentMenuLayoutProps";
+import { clearMenuItem, getPathNameByHash } from "./utils/utils";
 
 let layoutIndex = 0;
 
@@ -69,7 +69,7 @@ export type LayoutBreadcrumbProps<T extends AnyObject = AnyObject> = {
     route: LayoutItemType,
     params: T,
     routes: LayoutItemType[],
-    paths: string[],
+    paths: string[]
   ) => React.ReactNode;
 };
 
@@ -77,9 +77,9 @@ type GlobalTypes = Omit<
   Partial<RouterTypes> &
     SiderMenuProps &
     HeaderViewProps & {
-      token?: ProTokenType['layout'];
+      token?: ProTokenType["layout"];
     },
-  'collapsed'
+  "collapsed"
 >;
 
 export type ProLayoutProps = GlobalTypes & {
@@ -122,7 +122,7 @@ export type ProLayoutProps = GlobalTypes & {
    * @example 获取切换的页面地址 onPageChange={(location) => { console.log("切换到："+location.pathname) }}
    *
    * */
-  onPageChange?: (location?: RouterTypes['location']) => void;
+  onPageChange?: (location?: RouterTypes["location"]) => void;
 
   /**
    * @name layout 的 loading 效果，设置完成之后只展示一个 loading
@@ -173,7 +173,7 @@ export type ProLayoutProps = GlobalTypes & {
    * @example 不显示面包屑 breadcrumbRender={false}
    */
   breadcrumbRender?: WithFalse<
-    (routers: BreadcrumbProps['items']) => BreadcrumbProps['items']
+    (routers: BreadcrumbProps["items"]) => BreadcrumbProps["items"]
   >;
 
   /**
@@ -194,7 +194,7 @@ export type ProLayoutProps = GlobalTypes & {
         id: string;
         // 页面标题不带默认的 title
         pageName: string;
-      },
+      }
     ) => string
   >;
   /**
@@ -215,7 +215,7 @@ export type ProLayoutProps = GlobalTypes & {
    * @example 设置 disabled： itemRender={(route, params, routes, paths) => { return <Button disabled>{route.breadcrumbName}</Button> }}
    * @example 拼接 path： itemRender={(route, params, routes, paths) => { return <a href={paths.join('/')}>{route.breadcrumbName}</a> }}
    */
-  itemRender?: BreadcrumbProps['itemRender'];
+  itemRender?: BreadcrumbProps["itemRender"];
 
   formatMessage?: (message: MessageDescriptor) => string;
   /** @name 是否禁用移动端模式
@@ -235,7 +235,7 @@ export type ProLayoutProps = GlobalTypes & {
   className?: string;
 
   /** PageHeader 的 BreadcrumbProps 配置，会透传下去 */
-  breadcrumbProps?: Omit<BreadcrumbProps, 'itemRender'> & LayoutBreadcrumbProps;
+  breadcrumbProps?: Omit<BreadcrumbProps, "itemRender"> & LayoutBreadcrumbProps;
 
   /** @name 水印的相关配置 */
   waterMarkProps?: WaterMarkProps;
@@ -264,7 +264,7 @@ export type ProLayoutProps = GlobalTypes & {
    * @type "sub" | "group"
    * @example group
    */
-  siderMenuType?: 'sub' | 'group';
+  siderMenuType?: "sub" | "group";
 
   isChildrenLayout?: boolean;
 };
@@ -273,7 +273,7 @@ const headerRender = (
   props: ProLayoutProps & {
     hasSiderMenu: boolean;
   },
-  matchMenuKeys: string[],
+  matchMenuKeys: string[]
 ): React.ReactNode => {
   if (props.headerRender === false || props.pure) {
     return null;
@@ -299,7 +299,7 @@ const footerRender = (props: ProLayoutProps): React.ReactNode => {
 
 const renderSiderMenu = (
   props: ProLayoutProps,
-  matchMenuKeys: string[],
+  matchMenuKeys: string[]
 ): React.ReactNode => {
   const {
     layout,
@@ -316,7 +316,7 @@ const renderSiderMenu = (
   let { menuData } = props;
 
   /** 如果是分割菜单模式，需要专门实现一下 */
-  if (splitMenus && (openKeys !== false || layout === 'mix') && !isMobile) {
+  if (splitMenus && (openKeys !== false || layout === "mix") && !isMobile) {
     const [key] = selectedKeys || matchMenuKeys;
     if (key) {
       menuData =
@@ -334,7 +334,7 @@ const renderSiderMenu = (
   ) {
     return null;
   }
-  if (layout === 'top' && !isMobile) {
+  if (layout === "top" && !isMobile) {
     return (
       <SiderMenu
         matchMenuKeys={matchMenuKeys}
@@ -363,7 +363,7 @@ const renderSiderMenu = (
 
 const defaultPageTitleRender = (
   pageProps: GetPageTitleProps,
-  props: ProLayoutProps,
+  props: ProLayoutProps
 ): {
   title: string;
   id: string;
@@ -373,39 +373,39 @@ const defaultPageTitleRender = (
   const pageTitleInfo = getPageTitleInfo(pageProps);
   if (pageTitleRender === false) {
     return {
-      title: props.title || '',
-      id: '',
-      pageName: '',
+      title: props.title || "",
+      id: "",
+      pageName: "",
     };
   }
   if (pageTitleRender) {
     const title = pageTitleRender(
       pageProps,
       pageTitleInfo.title,
-      pageTitleInfo,
+      pageTitleInfo
     );
-    if (typeof title === 'string') {
+    if (typeof title === "string") {
       return getPageTitleInfo({
         ...pageTitleInfo,
         title,
       });
     }
     warning(
-      typeof title === 'string',
-      'pro-layout: renderPageTitle return value should be a string',
+      typeof title === "string",
+      "pro-layout: renderPageTitle return value should be a string"
     );
   }
   return pageTitleInfo;
 };
 
-export type BasicLayoutContext = { [K in 'location']: ProLayoutProps[K] } & {
+export type BasicLayoutContext = { [K in "location"]: ProLayoutProps[K] } & {
   breadcrumb: Record<string, MenuDataItem>;
 };
 
 const getPaddingInlineStart = (
   hasLeftPadding: boolean,
   collapsed: boolean | undefined,
-  siderWidth: number,
+  siderWidth: number
 ): number | undefined => {
   if (hasLeftPadding) {
     return collapsed ? 64 : siderWidth;
@@ -422,7 +422,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
   const {
     children,
     onCollapse: propsOnCollapse,
-    location = { pathname: '/' },
+    location = { pathname: "/" },
     contentStyle,
     route,
     defaultCollapsed,
@@ -440,13 +440,13 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
 
   const siderWidth = useMemo(() => {
     if (propsSiderWidth) return propsSiderWidth;
-    if (props.layout === 'mix') return 215;
+    if (props.layout === "mix") return 215;
     return 256;
   }, [props.layout, propsSiderWidth]);
 
   const context = useContext(ConfigProvider.ConfigContext);
 
-  const prefixCls = props.prefixCls ?? context.getPrefixCls('pro');
+  const prefixCls = props.prefixCls ?? context.getPrefixCls("pro");
 
   const [menuLoading, setMenuLoading] = useMountMergeState(false, {
     value: menu?.loading,
@@ -483,7 +483,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
       const locales = gLocaleObject();
       return locales[id] ? locales[id] : (defaultMessage as string);
     },
-    [propsFormatMessage],
+    [propsFormatMessage]
   );
 
   const { data, mutate, isLoading } = useSWR(
@@ -492,7 +492,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
       setMenuLoading(true);
       const menuDataItems = await menu?.request?.(
         params || {},
-        route?.children || route?.routes || [],
+        route?.children || route?.routes || []
       );
       setMenuLoading(false);
       return menuDataItems;
@@ -501,7 +501,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
       revalidateOnFocus: false,
       shouldRetryOnError: false,
       revalidateOnReconnect: false,
-    },
+    }
   );
 
   useEffect(() => {
@@ -527,9 +527,9 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
         data || route?.children || route?.routes || [],
         menu,
         formatMessage,
-        menuDataRender,
+        menuDataRender
       ),
-    [formatMessage, menu, menuDataRender, data, route?.children, route?.routes],
+    [formatMessage, menu, menuDataRender, data, route?.children, route?.routes]
   );
 
   const { breadcrumb, breadcrumbMap, menuData = [] } = menuInfoData || {};
@@ -542,15 +542,19 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
     };
   }
   const matchMenus = useMemo(() => {
-    return getMatchMenu(location.pathname || '/', menuData || [], true);
-  }, [location.pathname, menuData]);
+    return getMatchMenu(
+      getPathNameByHash(location.hash) || "/",
+      menuData || [],
+      true
+    );
+  }, [location.hash, menuData]);
 
   const matchMenuKeys = useMemo(
     () =>
       Array.from(
-        new Set(matchMenus.map((item) => item.key || item.path || '')),
+        new Set(matchMenus.map((item) => item.key || item.path || ""))
       ),
-    [matchMenus],
+    [matchMenus]
   );
 
   // 当前选中的menu，一般不会为空
@@ -572,26 +576,26 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
   const colSize = useBreakpoint();
 
   const isMobile = useMemo(() => {
-    return (colSize === 'sm' || colSize === 'xs') && !props.disableMobile;
+    return (colSize === "sm" || colSize === "xs") && !props.disableMobile;
   }, [colSize, props.disableMobile]);
 
   // If it is a fix menu, calculate padding
   // don't need padding in phone mode
   /* Checking if the menu is loading and if it is, it will return a skeleton loading screen. */
-  const hasLeftPadding = propsLayout !== 'top' && !isMobile;
+  const hasLeftPadding = propsLayout !== "top" && !isMobile;
 
   const [collapsed, onCollapse] = useMergedState<boolean>(
     () => {
       if (defaultCollapsed !== undefined) return defaultCollapsed;
-      if (process.env.NODE_ENV === 'TEST') return false;
+      if (process.env.NODE_ENV === "TEST") return false;
       if (isMobile) return true;
-      if (colSize === 'md') return true;
+      if (colSize === "md") return true;
       return false;
     },
     {
       value: props.collapsed,
       onChange: propsOnCollapse,
-    },
+    }
   );
 
   // Splicing parameters, adding menuData and formatMessage in props
@@ -608,19 +612,19 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
         type: siderMenuType || menu?.type,
         loading: menuLoading,
       },
-      layout: propsLayout as 'side',
+      layout: propsLayout as "side",
     },
-    ['className', 'style', 'breadcrumbRender'],
+    ["className", "style", "breadcrumbRender"]
   );
 
   // gen page title
   const pageTitleInfo = defaultPageTitleRender(
     {
-      pathname: location.pathname,
+      pathname: getPathNameByHash(location.hash),
       ...defaultProps,
       breadcrumbMap,
     },
-    props,
+    props
   );
 
   // gen breadcrumbProps, parameter for pageHeader
@@ -630,7 +634,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
       breadcrumbRender: props.breadcrumbRender,
       breadcrumbMap,
     },
-    props,
+    props
   );
 
   // render sider dom
@@ -642,7 +646,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
       isMobile,
       collapsed,
     },
-    matchMenuKeys,
+    matchMenuKeys
   );
 
   // render header dom
@@ -656,7 +660,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
       collapsed,
       onCollapse,
     },
-    matchMenuKeys,
+    matchMenuKeys
   );
 
   // render footer dom
@@ -682,27 +686,27 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
   const className = classNames(
     props.className,
     hashId,
-    'ant-design-pro',
+    "ant-design-pro",
     proLayoutClassName,
     {
       [`screen-${colSize}`]: colSize,
-      [`${proLayoutClassName}-top-menu`]: propsLayout === 'top',
+      [`${proLayoutClassName}-top-menu`]: propsLayout === "top",
       [`${proLayoutClassName}-is-children`]: isChildrenLayout,
       [`${proLayoutClassName}-fix-siderbar`]: fixSiderbar,
       [`${proLayoutClassName}-${propsLayout}`]: propsLayout,
-    },
+    }
   );
 
   /** 计算 slider 的宽度 */
   const leftSiderWidth = getPaddingInlineStart(
     !!hasLeftPadding,
     collapsed,
-    siderWidth,
+    siderWidth
   );
 
   // siderMenuDom 为空的时候，不需要 padding
   const genLayoutStyle: CSSProperties = {
-    position: 'relative',
+    position: "relative",
   };
 
   // if is some layout children, don't need min height
@@ -714,7 +718,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
   useEffect(() => {
     props.onPageChange?.(props.location);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, location.pathname?.search]);
+  }, [location.hash, location.hash?.search]);
 
   const [hasFooterToolbar, setHasFooterToolbar] = useState(false);
   /**
@@ -732,7 +736,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
             key={index}
             src={item.src}
             style={{
-              position: 'absolute',
+              position: "absolute",
               ...item,
             }}
           />
@@ -781,9 +785,9 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
           ) : null}
           <Layout
             style={{
-              minHeight: '100%',
+              minHeight: "100%",
               // hack style
-              flexDirection: siderMenuDom ? 'row' : undefined,
+              flexDirection: siderMenuDom ? "row" : undefined,
               ...style,
             }}
           >
@@ -798,9 +802,9 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
                 components: {
                   Menu: coverToNewToken({
                     colorItemBg:
-                      token.layout?.sider?.colorMenuBackground || 'transparent',
+                      token.layout?.sider?.colorMenuBackground || "transparent",
                     colorSubItemBg:
-                      token.layout?.sider?.colorMenuBackground || 'transparent',
+                      token.layout?.sider?.colorMenuBackground || "transparent",
                     radiusItem: token.borderRadius,
 
                     colorItemBgSelected:
@@ -823,13 +827,13 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
                       token?.colorTextSecondary,
                     colorItemTextHover:
                       token.layout?.sider?.colorTextMenuItemHover ||
-                      'rgba(0, 0, 0, 0.85)', // 悬浮态
+                      "rgba(0, 0, 0, 0.85)", // 悬浮态
                     colorItemTextSelected:
                       token.layout?.sider?.colorTextMenuSelected ||
-                      'rgba(0, 0, 0, 1)',
+                      "rgba(0, 0, 0, 1)",
                     popupBg: token?.colorBgElevated,
                     subMenuItemBg: token?.colorBgElevated,
-                    darkSubMenuItemBg: 'transparent',
+                    darkSubMenuItemBg: "transparent",
                     // @ts-expect-error
                     darkPopupBg: token?.colorBgElevated,
                   }),
@@ -869,7 +873,7 @@ const BaseProLayout: React.FC<ProLayoutProps> = (props) => {
           </Layout>
         </div>
       )}
-    </RouteContext.Provider>,
+    </RouteContext.Provider>
   );
 };
 
@@ -879,7 +883,7 @@ const ProLayout: React.FC<ProLayoutProps> = (props) => {
   const darkProps =
     props.navTheme !== undefined
       ? {
-          dark: props.navTheme === 'realDark',
+          dark: props.navTheme === "realDark",
         }
       : {};
 

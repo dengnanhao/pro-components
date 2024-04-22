@@ -1,4 +1,8 @@
-# @ant-design/pro-layout
+# @ant-design/pro-layout-electron
+
+基于`@ant-design/pro-layout`改造，适用于electron中，解决layout菜单不显示，菜单选中不高亮及面包屑不显示等问题
+
+**注意！注意！注意！路由一定要使用hash路由**
 
 ![](https://gw.alipayobjects.com/zos/antfincdn/HSeAGqaEwn/1586504755352-479bf47d-97a6-4080-afed-d38ffe905e57.png)
 
